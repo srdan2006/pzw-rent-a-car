@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+sqlalchemy>=2.0
+asyncpg
+alembic
+pydantic-settings
+bcrypt
+pyjwt
+pytest
+pytest-asyncio
+httpx
+freezegun
+ruff
