@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_session
@@ -10,16 +10,19 @@ from app.core.security import decode_token
 from app.models import User
 from app.repositories import user_repository
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+bearer_scheme = HTTPBearer(auto_error=False)
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
 
 
 async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],
     session: SessionDep,
 ) -> User:
-    payload = decode_token(token, "access")
+    if credentials is None:
+        raise AppError(401, "NOT_AUTHENTICATED", "Potrebna je prijava.")
+
+    payload = decode_token(credentials.credentials, "access")
     user = await user_repository.get_by_id(session, int(payload["sub"]))
     if user is None:
         raise AppError(401, "INVALID_TOKEN", "Token nije valjan ili je istekao.")
