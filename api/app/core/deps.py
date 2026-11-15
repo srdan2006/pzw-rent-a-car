@@ -4,6 +4,10 @@ from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from fastapi import Query
+
+from app.schemas.common import PaginationParams
+
 from app.core.database import get_session
 from app.core.errors import AppError
 from app.core.security import decode_token
@@ -42,3 +46,5 @@ def require_role(*roles: str):
 
 
 AdminUser = Annotated[User, Depends(require_role("admin"))]
+
+Pagination = Annotated[PaginationParams, Query()]
