@@ -11,3 +11,4 @@ pytest-asyncio
 httpx
 freezegun
 ruff
+python-multipart
