@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.errors import AppError
 from app.models import Reservation, User
+from app.models.reservation import STATUS_TRANSITIONS
 from app.repositories import reservation_repository
 from app.schemas.common import Page, PaginationParams
 from app.schemas.reservation import ReservationCreate, ReservationRead
@@ -76,5 +77,44 @@ async def create_reservation(
             total_price=category.daily_price * days,
         ),
     )
+    await session.commit()
+    return reservation
+
+async def cancel_reservation(
+    session: AsyncSession, reservation_id: int, user: User
+) -> Reservation:
+    reservation = await get_reservation(session, reservation_id, user)
+
+    if reservation.status not in ("pending", "confirmed"):
+        raise AppError(
+            409,
+            "INVALID_STATUS_TRANSITION",
+            f"Rezervacija u statusu '{reservation.status}' ne može se otkazati.",
+        )
+    if date.today() >= reservation.start_date:
+        raise AppError(
+            409,
+            "CANCELLATION_DEADLINE_PASSED",
+            "Rezervacija se može otkazati najkasnije dan prije preuzimanja.",
+        )
+
+    reservation.status = "cancelled"
+    await session.commit()
+    return reservation
+
+
+async def change_status(
+    session: AsyncSession, reservation_id: int, new_status: str, user: User
+) -> Reservation:
+    reservation = await get_reservation(session, reservation_id, user)
+
+    if STATUS_TRANSITIONS.get(reservation.status) != new_status:
+        raise AppError(
+            409,
+            "INVALID_STATUS_TRANSITION",
+            f"Prijelaz iz '{reservation.status}' u '{new_status}' nije dopušten.",
+        )
+
+    reservation.status = new_status
     await session.commit()
     return reservation

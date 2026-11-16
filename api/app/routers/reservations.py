@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
-from app.core.deps import CurrentUser, Pagination, SessionDep
+from app.core.deps import AdminUser, CurrentUser, Pagination, SessionDep
 from app.models import Reservation
 from app.schemas.common import Page
-from app.schemas.reservation import ReservationCreate, ReservationRead
+from app.schemas.reservation import ReservationCreate, ReservationRead, ReservationStatusUpdate
 from app.services import reservation_service
 
 router = APIRouter(prefix="/reservations", tags=["reservations"])
@@ -28,3 +28,21 @@ async def create_reservation(
     data: ReservationCreate, session: SessionDep, user: CurrentUser
 ) -> Reservation:
     return await reservation_service.create_reservation(session, data, user)
+
+@router.post("/{reservation_id}/cancel", response_model=ReservationRead)
+async def cancel_reservation(
+    reservation_id: int, session: SessionDep, user: CurrentUser
+) -> Reservation:
+    return await reservation_service.cancel_reservation(session, reservation_id, user)
+
+
+@router.patch("/{reservation_id}/status", response_model=ReservationRead)
+async def change_status(
+    reservation_id: int,
+    data: ReservationStatusUpdate,
+    session: SessionDep,
+    admin: AdminUser,
+) -> Reservation:
+    return await reservation_service.change_status(
+        session, reservation_id, data.status, admin
+    )
