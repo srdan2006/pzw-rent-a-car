@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     secret_key: str
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 7
+    test_database_url: str | None = None
 
 
 settings = Settings()
