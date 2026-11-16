@@ -36,6 +36,7 @@ async def create_category(
 
     category = await category_repository.add(session, VehicleCategory(**data.model_dump()))
     await session.commit()
+    await session.refresh(category)
     return category
 
 
@@ -56,6 +57,7 @@ async def update_category(
         setattr(category, field, value)
 
     await session.commit()
+    await session.refresh(category)
     return category
 
 
