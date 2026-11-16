@@ -63,6 +63,9 @@ async def create_reservation(
     category = await category_service.get_category(session, vehicle.category_id)
     days = (data.end_date - data.start_date).days
 
+    if await reservation_repository.has_overlap(session, vehicle.id, data.start_date, data.end_date):
+        raise AppError(409, "VEHICLE_NOT_AVAILABLE", "Vozilo je već rezervirano u tom terminu.")
+
     reservation = await reservation_repository.add(
         session,
         Reservation(

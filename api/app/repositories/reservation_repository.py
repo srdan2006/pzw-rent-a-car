@@ -1,8 +1,10 @@
-from sqlalchemy import func, select
+from datetime import date
+
+from sqlalchemy import exists, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Reservation
-
+from app.models.reservation import BLOCKING_STATUSES
 
 async def list_reservations(
     session: AsyncSession, limit: int, offset: int, user_id: int | None
@@ -26,3 +28,19 @@ async def add(session: AsyncSession, reservation: Reservation) -> Reservation:
     session.add(reservation)
     await session.flush()
     return reservation
+
+async def has_overlap(
+    session: AsyncSession, vehicle_id: int, start_date: date, end_date: date
+) -> bool:
+    return bool(
+        await session.scalar(
+            select(
+                exists().where(
+                    Reservation.vehicle_id == vehicle_id,
+                    Reservation.status.in_(BLOCKING_STATUSES),
+                    Reservation.start_date < end_date,
+                    Reservation.end_date > start_date,
+                )
+            )
+        )
+    )
