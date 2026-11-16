@@ -12,7 +12,9 @@ async def list_vehicles(
         query = query.where(Vehicle.category_id == category_id)
 
     total = await session.scalar(select(func.count()).select_from(query.subquery()))
-    result = await session.scalars(query.order_by(Vehicle.id).limit(limit).offset(offset))
+    result = await session.scalars(
+        query.order_by(Vehicle.id).limit(limit).offset(offset)
+    )
     return list(result), total or 0
 
 

@@ -35,9 +35,7 @@ async def get_reservation(
 ) -> Reservation:
     reservation = await reservation_repository.get_by_id(session, reservation_id)
 
-    if reservation is None or (
-        not _is_admin(user) and reservation.user_id != user.id
-    ):
+    if reservation is None or (not _is_admin(user) and reservation.user_id != user.id):
         raise AppError(404, "RESERVATION_NOT_FOUND", "Rezervacija ne postoji.")
 
     return reservation
@@ -64,8 +62,12 @@ async def create_reservation(
     category = await category_service.get_category(session, vehicle.category_id)
     days = (data.end_date - data.start_date).days
 
-    if await reservation_repository.has_overlap(session, vehicle.id, data.start_date, data.end_date):
-        raise AppError(409, "VEHICLE_NOT_AVAILABLE", "Vozilo je već rezervirano u tom terminu.")
+    if await reservation_repository.has_overlap(
+        session, vehicle.id, data.start_date, data.end_date
+    ):
+        raise AppError(
+            409, "VEHICLE_NOT_AVAILABLE", "Vozilo je već rezervirano u tom terminu."
+        )
 
     reservation = await reservation_repository.add(
         session,
@@ -79,6 +81,7 @@ async def create_reservation(
     )
     await session.commit()
     return reservation
+
 
 async def cancel_reservation(
     session: AsyncSession, reservation_id: int, user: User

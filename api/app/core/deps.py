@@ -1,18 +1,15 @@
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, Query
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from fastapi import Query
-
-from app.schemas.common import PaginationParams
 
 from app.core.database import get_session
 from app.core.errors import AppError
 from app.core.security import decode_token
 from app.models import User
 from app.repositories import user_repository
+from app.schemas.common import PaginationParams
 
 bearer_scheme = HTTPBearer(auto_error=False)
 

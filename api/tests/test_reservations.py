@@ -5,7 +5,9 @@ def future(days: int) -> str:
     return (date.today() + timedelta(days=days)).isoformat()
 
 
-async def create_reservation(client, headers, start: str, end: str, vehicle_id: int = 1):
+async def create_reservation(
+    client, headers, start: str, end: str, vehicle_id: int = 1
+):
     return await client.post(
         "/reservations",
         json={"vehicle_id": vehicle_id, "start_date": start, "end_date": end},
@@ -42,11 +44,15 @@ async def test_customer_sees_only_own_reservations(
     assert admin_list.json()["total"] == 1
 
 
-async def test_customer_cannot_see_others_reservation(client, ana_headers, marko_headers):
+async def test_customer_cannot_see_others_reservation(
+    client, ana_headers, marko_headers
+):
     created = await create_reservation(client, ana_headers, future(10), future(12))
     reservation_id = created.json()["id"]
 
-    response = await client.get(f"/reservations/{reservation_id}", headers=marko_headers)
+    response = await client.get(
+        f"/reservations/{reservation_id}", headers=marko_headers
+    )
     assert response.status_code == 404
     assert response.json()["code"] == "RESERVATION_NOT_FOUND"
 
@@ -67,7 +73,9 @@ async def test_admin_sees_any_reservation(client, ana_headers, admin_headers):
     created = await create_reservation(client, ana_headers, future(10), future(12))
     reservation_id = created.json()["id"]
 
-    response = await client.get(f"/reservations/{reservation_id}", headers=admin_headers)
+    response = await client.get(
+        f"/reservations/{reservation_id}", headers=admin_headers
+    )
     assert response.status_code == 200
 
 

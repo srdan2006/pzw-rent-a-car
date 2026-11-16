@@ -53,7 +53,9 @@ def decode_token(token: str, expected_type: str) -> dict:
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
     except jwt.PyJWTError as exc:
-        raise AppError(401, "INVALID_TOKEN", "Token nije valjan ili je istekao.") from exc
+        raise AppError(
+            401, "INVALID_TOKEN", "Token nije valjan ili je istekao."
+        ) from exc
 
     if payload.get("type") != expected_type:
         raise AppError(401, "INVALID_TOKEN", "Token nije valjan ili je istekao.")

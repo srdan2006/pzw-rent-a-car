@@ -51,19 +51,36 @@ async def seed_data(create_schema, password_hashes):
     async with TestSession() as session:
         session.add_all(
             [
-                User(email="admin@test.hr", full_name="Admin", role="admin",
-                     password_hash=password_hashes["admin@test.hr"]),
-                User(email="ana@test.hr", full_name="Ana", role="customer",
-                     password_hash=password_hashes["ana@test.hr"]),
-                User(email="marko@test.hr", full_name="Marko", role="customer",
-                     password_hash=password_hashes["marko@test.hr"]),
+                User(
+                    email="admin@test.hr",
+                    full_name="Admin",
+                    role="admin",
+                    password_hash=password_hashes["admin@test.hr"],
+                ),
+                User(
+                    email="ana@test.hr",
+                    full_name="Ana",
+                    role="customer",
+                    password_hash=password_hashes["ana@test.hr"],
+                ),
+                User(
+                    email="marko@test.hr",
+                    full_name="Marko",
+                    role="customer",
+                    password_hash=password_hashes["marko@test.hr"],
+                ),
                 VehicleCategory(name="Mali", daily_price=Decimal("35.00")),
             ]
         )
         await session.flush()
         session.add(
-            Vehicle(category_id=1, brand="Volkswagen", model="Polo",
-                    license_plate="ZD-001-AA", year=2022)
+            Vehicle(
+                category_id=1,
+                brand="Volkswagen",
+                model="Polo",
+                license_plate="ZD-001-AA",
+                year=2022,
+            )
         )
         await session.commit()
 

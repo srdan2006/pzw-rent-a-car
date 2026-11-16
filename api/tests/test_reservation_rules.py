@@ -3,7 +3,6 @@ from freezegun import freeze_time
 from tests.conftest import login_headers
 from tests.test_reservations import create_reservation, future
 
-
 # --- Kapacitet: preklapanje termina ---
 
 
@@ -15,7 +14,9 @@ async def test_overlapping_reservation_returns_409(client, ana_headers, marko_he
     assert response.json()["code"] == "VEHICLE_NOT_AVAILABLE"
 
 
-async def test_reservation_inside_existing_returns_409(client, ana_headers, marko_headers):
+async def test_reservation_inside_existing_returns_409(
+    client, ana_headers, marko_headers
+):
     await create_reservation(client, ana_headers, future(10), future(20))
 
     response = await create_reservation(client, marko_headers, future(12), future(14))
@@ -31,7 +32,9 @@ async def test_pickup_on_return_day_is_allowed(client, ana_headers, marko_header
 
 async def test_cancelled_reservation_frees_vehicle(client, ana_headers, marko_headers):
     created = await create_reservation(client, ana_headers, future(10), future(14))
-    await client.post(f"/reservations/{created.json()['id']}/cancel", headers=ana_headers)
+    await client.post(
+        f"/reservations/{created.json()['id']}/cancel", headers=ana_headers
+    )
 
     response = await create_reservation(client, marko_headers, future(10), future(14))
     assert response.status_code == 201
@@ -56,7 +59,9 @@ async def test_full_status_flow(client, ana_headers, admin_headers):
     url = f"/reservations/{created.json()['id']}/status"
 
     for status in ["confirmed", "active", "returned"]:
-        response = await client.patch(url, json={"status": status}, headers=admin_headers)
+        response = await client.patch(
+            url, json={"status": status}, headers=admin_headers
+        )
         assert response.status_code == 200
         assert response.json()["status"] == status
 
@@ -84,7 +89,9 @@ async def test_unknown_status_returns_422(client, ana_headers, admin_headers):
     assert response.status_code == 422
 
 
-async def test_active_reservation_cannot_be_cancelled(client, ana_headers, admin_headers):
+async def test_active_reservation_cannot_be_cancelled(
+    client, ana_headers, admin_headers
+):
     created = await create_reservation(client, ana_headers, future(10), future(12))
     reservation_id = created.json()["id"]
     for status in ["confirmed", "active"]:

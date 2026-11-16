@@ -6,8 +6,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base
 
 if TYPE_CHECKING:
-    from app.models.vehicle_category import VehicleCategory
     from app.models.reservation import Reservation
+    from app.models.vehicle_category import VehicleCategory
 
 
 class Vehicle(Base):
@@ -22,4 +22,4 @@ class Vehicle(Base):
     is_active: Mapped[bool] = mapped_column(server_default=true())
 
     category: Mapped["VehicleCategory"] = relationship(back_populates="vehicles")
-    reservations: Mapped[list["Reservation"]] = relationship(back_populates="vehicle")    
+    reservations: Mapped[list["Reservation"]] = relationship(back_populates="vehicle")

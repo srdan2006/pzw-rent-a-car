@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.core.errors import register_error_handlers
-from app.routers import auth, categories, vehicles, reservations
+from app.routers import auth, categories, reservations, vehicles
 
 app = FastAPI(title="Rent a Car API")
 register_error_handlers(app)

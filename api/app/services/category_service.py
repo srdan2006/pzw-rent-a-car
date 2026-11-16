@@ -32,9 +32,13 @@ async def create_category(
     session: AsyncSession, data: CategoryCreate
 ) -> VehicleCategory:
     if await category_repository.get_by_name(session, data.name):
-        raise AppError(409, "CATEGORY_NAME_TAKEN", "Kategorija s tim imenom već postoji.")
+        raise AppError(
+            409, "CATEGORY_NAME_TAKEN", "Kategorija s tim imenom već postoji."
+        )
 
-    category = await category_repository.add(session, VehicleCategory(**data.model_dump()))
+    category = await category_repository.add(
+        session, VehicleCategory(**data.model_dump())
+    )
     await session.commit()
     await session.refresh(category)
     return category

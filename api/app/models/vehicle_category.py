@@ -12,9 +12,7 @@ if TYPE_CHECKING:
 
 class VehicleCategory(Base):
     __tablename__ = "vehicle_categories"
-    __table_args__ = (
-        CheckConstraint("daily_price > 0", name="daily_price_positive"),
-    )
+    __table_args__ = (CheckConstraint("daily_price > 0", name="daily_price_positive"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(50), unique=True)

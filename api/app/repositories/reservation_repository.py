@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import Reservation
 from app.models.reservation import BLOCKING_STATUSES
 
+
 async def list_reservations(
     session: AsyncSession, limit: int, offset: int, user_id: int | None
 ) -> tuple[list[Reservation], int]:
@@ -28,6 +29,7 @@ async def add(session: AsyncSession, reservation: Reservation) -> Reservation:
     session.add(reservation)
     await session.flush()
     return reservation
+
 
 async def has_overlap(
     session: AsyncSession, vehicle_id: int, start_date: date, end_date: date
